@@ -37,7 +37,7 @@ async function googleToken(): Promise<{ token: string; expires: number }> {
       scope: 'https://www.googleapis.com/auth/drive.appdata',
       callback: (r: { access_token?: string; expires_in?: number; error?: string }) =>
         r.access_token ? res({ token: r.access_token, expires: Date.now() + (r.expires_in ?? 3600) * 1000 - 30000 }) : rej(new Error(r.error || 'google')),
-      error_callback: () => rej(new Error('google')),
+      error_callback: (e: { type?: string }) => rej(new Error('google-' + (e?.type || 'popup'))),
     })
     c.requestAccessToken()
   })
@@ -48,7 +48,7 @@ const gh = () => ({ Authorization: 'Bearer ' + session!.token })
 async function gFind(): Promise<string | null> {
   const q = encodeURIComponent(`name='${FILE}'`)
   const r = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id)`, { headers: gh() })
-  if (!r.ok) throw new Error('drive')
+  if (!r.ok) throw new Error('drive-' + r.status)
   return (await r.json()).files?.[0]?.id ?? null
 }
 
@@ -109,7 +109,7 @@ export async function pull(): Promise<string | null> {
     const id = await gFind()
     if (!id) return null
     const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`, { headers: gh() })
-    if (!r.ok) throw new Error('drive')
+    if (!r.ok) throw new Error('drive-' + r.status)
     return r.text()
   }
   const r = await fetch(MS_URL, { headers: gh() })

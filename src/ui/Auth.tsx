@@ -69,7 +69,7 @@ export function Social({ onPulled }: { onPulled: (f: VaultFile) => void }) {
       await connect(p)
       const text = await pull()
       if (text) { const f = parseBackup(text); storeVault(f); onPulled(f) } else setMsg(t('cloudNone'))
-    } catch { setMsg(t('cloudFail')) }
+    } catch (e) { setMsg(t('cloudFail') + ' (' + ((e as Error).message || 'error') + ')') }
     setBusy(null)
   }
   return (
