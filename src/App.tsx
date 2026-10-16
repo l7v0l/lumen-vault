@@ -37,8 +37,8 @@ export default function App() {
       {stage === 'auth' && (
         <div className="fade-in">
           {file
-            ? <Unlock file={file} onFile={setFile} onUnlocked={(s) => { setSession(s); setStage('vault') }} />
-            : <Create onCreated={(s) => { setSession(s); setFile(s.file); setStage('quick') }} />}
+            ? <Unlock file={file} onFile={setFile} onUnlocked={(s) => { setSession(s); if (!s.file.pin && !s.file.bio && !prefs.quickOffered) { setPrefs({ ...prefs, quickOffered: true }); setStage('quick') } else setStage('vault') }} />
+            : <Create onCreated={(s) => { setSession(s); setFile(s.file); setStage('quick') }} onPulled={setFile} />}
         </div>
       )}
       {stage === 'quick' && session && <QuickSetup session={session} onDone={() => setStage('vault')} />}

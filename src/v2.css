@@ -123,3 +123,13 @@ a.mini { text-decoration: none; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: #2a3a63; border-radius: 99px; }
 ::-webkit-scrollbar-track { background: transparent; }
+
+.social { display: flex; flex-direction: column; gap: 10px; }
+.sbtn { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1f1f1f; border: 0; font-weight: 600; }
+.sbtn:hover:not(:disabled) { background: #f1f3f4; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.set-cloud { display: flex; flex-direction: column; gap: 8px; }
+.set-cloud small { color: var(--muted); font-size: 13px; }
+.row.wrap { flex-wrap: wrap; }
+.grow { flex: 1; align-self: center; font-size: 13px; }

@@ -52,6 +52,10 @@ const en = {
   statLogins: 'Logins', statCards: 'Cards', statNotes: 'Notes', health: 'Security health', weakPw: 'Weak passwords', reusedPw: 'Reused passwords', allGood: 'All good',
   hideSide: 'Hide menu', showSide: 'Show menu', sortName: 'Name', sortRecent: 'Recent', openSite: 'Open site', updatedAt: 'Updated',
   bankPick: 'Choose card design', network: 'Card network', cardOk: 'Valid card number', cardBad: 'Number looks invalid', flipHint: 'Tap the card to flip', quickAdd: 'Quick add',
+  google: 'Continue with Google', microsoft: 'Continue with Outlook', orSep: 'or',
+  cloudTitle: 'Cloud backup', cloudConnectG: 'Connect Google Drive', cloudConnectM: 'Connect OneDrive', cloudSync: 'Sync now', cloudDone: 'Backed up (encrypted)',
+  cloudNone: 'No vault found in this account. Create one below.', cloudFail: 'Sign-in or sync failed.', cloudFound: 'Vault found. Enter your master password.',
+  cloudOn: 'Connected: ', cloudOff: 'Disconnect',
   editLogin: 'Edit login', editCard: 'Edit card', editNote: 'Edit note', noteTitleHint: 'Note title', pwStrength: 'Strength', tapReveal: 'Tap to reveal',
 }
 
@@ -102,6 +106,10 @@ const ar: Dict = {
   statLogins: 'حسابات', statCards: 'بطاقات', statNotes: 'ملاحظات', health: 'صحة الأمان', weakPw: 'كلمات مرور ضعيفة', reusedPw: 'كلمات مرور مكررة', allGood: 'كل شيء سليم',
   hideSide: 'إخفاء القائمة', showSide: 'إظهار القائمة', sortName: 'الاسم', sortRecent: 'الأحدث', openSite: 'فتح الموقع', updatedAt: 'آخر تحديث',
   bankPick: 'اختر تصميم البطاقة', network: 'شبكة البطاقة', cardOk: 'رقم البطاقة صحيح', cardBad: 'الرقم يبدو غير صحيح', flipHint: 'المس البطاقة لقلبها', quickAdd: 'إضافة سريعة',
+  google: 'المتابعة بحساب Google', microsoft: 'المتابعة بحساب Outlook', orSep: 'أو',
+  cloudTitle: 'نسخة احتياطية سحابية', cloudConnectG: 'ربط Google Drive', cloudConnectM: 'ربط OneDrive', cloudSync: 'مزامنة الآن', cloudDone: 'تم النسخ (مشفّر)',
+  cloudNone: 'لا توجد خزنة في هذا الحساب. أنشئ واحدة بالأسفل.', cloudFail: 'فشل تسجيل الدخول أو المزامنة.', cloudFound: 'تم العثور على الخزنة. أدخل كلمة المرور الرئيسية.',
+  cloudOn: 'متصل: ', cloudOff: 'قطع الاتصال',
   editLogin: 'تعديل الحساب', editCard: 'تعديل البطاقة', editNote: 'تعديل الملاحظة', noteTitleHint: 'عنوان الملاحظة', pwStrength: 'القوة', tapReveal: 'المس للإظهار',
 }
 
@@ -150,6 +158,10 @@ const zh: Dict = {
   statLogins: '登录', statCards: '银行卡', statNotes: '笔记', health: '安全状况', weakPw: '弱密码', reusedPw: '重复密码', allGood: '一切正常',
   hideSide: '隐藏菜单', showSide: '显示菜单', sortName: '名称', sortRecent: '最近', openSite: '打开网站', updatedAt: '更新于',
   bankPick: '选择卡面设计', network: '卡组织', cardOk: '卡号有效', cardBad: '卡号似乎无效', flipHint: '点击卡片翻转', quickAdd: '快速添加',
+  google: '使用 Google 继续', microsoft: '使用 Outlook 继续', orSep: '或',
+  cloudTitle: '云备份', cloudConnectG: '连接 Google Drive', cloudConnectM: '连接 OneDrive', cloudSync: '立即同步', cloudDone: '已备份（已加密）',
+  cloudNone: '此账户中没有保险库，请在下方创建。', cloudFail: '登录或同步失败。', cloudFound: '已找到保险库，请输入主密码。',
+  cloudOn: '已连接：', cloudOff: '断开连接',
   editLogin: '编辑登录', editCard: '编辑银行卡', editNote: '编辑笔记', noteTitleHint: '笔记标题', pwStrength: '强度', tapReveal: '点击显示',
 }
 

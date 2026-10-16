@@ -14,7 +14,7 @@
       { "title": "Lumen", "width": 1080, "height": 720, "minWidth": 380, "minHeight": 560, "center": true, "backgroundColor": "#0b1220", "contentProtected": true }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: https://*.googleusercontent.com; frame-src https://accounts.google.com; connect-src 'self' ipc: http://ipc.localhost https://accounts.google.com https://www.googleapis.com https://oauth2.googleapis.com https://login.microsoftonline.com https://graph.microsoft.com"
     }
   },
   "bundle": {

@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { LANGS, useI18n } from '../i18n'
 import {
   createVault, estimateBits, setupBiometric, setupPin, unlockWithBiometric, unlockWithPassword, unlockWithPin,
-  VaultError, MIN_MASTER_LEN, type Session, type VaultFile,
+  VaultError, MIN_MASTER_LEN, parseBackup, type Session, type VaultFile,
 } from '../crypto/vault'
 import { biometricAvailable, enrollBiometric, getSecret } from '../crypto/webauthn'
 import { storeVault } from '../store'
+import { availableProviders, connect, pull, push, type Provider } from '../cloud'
 import { Bulb } from './Bulb'
 
 export function LangSwitch() {
@@ -44,7 +45,45 @@ function Shell({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function Create({ onCreated }: { onCreated: (s: Session) => void }) {
+function GIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.3-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.3-.4-4z"/></svg>
+  )
+}
+function MIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="#F25022" d="M1 1h10v10H1z"/><path fill="#7FBA00" d="M13 1h10v10H13z"/><path fill="#00A4EF" d="M1 13h10v10H1z"/><path fill="#FFB900" d="M13 13h10v10H13z"/></svg>
+  )
+}
+
+export function Social({ onPulled }: { onPulled: (f: VaultFile) => void }) {
+  const { t } = useI18n()
+  const [msg, setMsg] = useState('')
+  const [busy, setBusy] = useState<Provider | null>(null)
+  const avail = availableProviders()
+  if (!avail.length) return null
+  const go = async (p: Provider) => {
+    setBusy(p); setMsg('')
+    try {
+      await connect(p)
+      const text = await pull()
+      if (text) { const f = parseBackup(text); storeVault(f); onPulled(f) } else setMsg(t('cloudNone'))
+    } catch { setMsg(t('cloudFail')) }
+    setBusy(null)
+  }
+  return (
+    <>
+      <div className="social">
+        {avail.includes('google') && <button className="btn sbtn" disabled={!!busy} onClick={() => go('google')}><GIcon />{t('google')}</button>}
+        {avail.includes('microsoft') && <button className="btn sbtn" disabled={!!busy} onClick={() => go('microsoft')}><MIcon />{t('microsoft')}</button>}
+      </div>
+      {msg && <p className="sub small">{msg}</p>}
+      <div className="or"><span>{t('orSep')}</span></div>
+    </>
+  )
+}
+
+export function Create({ onCreated, onPulled }: { onCreated: (s: Session) => void; onPulled: (f: VaultFile) => void }) {
   const { t } = useI18n()
   const [pw, setPw] = useState('')
   const [pw2, setPw2] = useState('')
@@ -58,6 +97,7 @@ export function Create({ onCreated }: { onCreated: (s: Session) => void }) {
     setBusy(true)
     const s = await createVault(pw)
     storeVault(s.file)
+    push(s.file).catch(() => {})
     onCreated(s)
   }
 
@@ -65,6 +105,7 @@ export function Create({ onCreated }: { onCreated: (s: Session) => void }) {
     <Shell>
       <h2>{t('createTitle')}</h2>
       <p className="sub">{t('createSub')}</p>
+      <Social onPulled={onPulled} />
       <form onSubmit={go}>
         <label>{t('master')}
           <input type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus />

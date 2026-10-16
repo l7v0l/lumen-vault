@@ -18,6 +18,9 @@ No security product is "unbreakable". This document says what is protected, and 
 
 File format spec: see header comment in `src/crypto/vault.ts`. Tests: `npm test` (15 tests: round-trip, tamper detection, AAD binding, PIN lockout, biometric wrap, backup, generator).
 
+## Cloud sign-in
+Google / Microsoft sign-in only grants access to this app's private folder (Drive `appDataFolder`, OneDrive `approot`). It does **not** unlock the vault: on a new device you sign in, download the encrypted vault, enter the master password once, then set a device-local PIN/biometric. PIN and biometric wrappers are never uploaded. A PIN alone cannot protect a cloud-stored vault (no server to limit guesses), so the master password remains required once per device.
+
 ## Known limits (read these)
 1. **PIN attempt limit is not enforced against a file copy.** The fail counter lives in the vault file. An attacker who copies the file can brute-force a 6-digit PIN offline; Argon2id at 128 MiB makes each guess costly but a short PIN is weak by nature. A real hardware-bound limit needs the OS keystore / TPM. Planned: bind the PIN wrapper to a Windows DPAPI/TPM or Android Keystore secret in the Tauri (Rust) layer. Use 8+ digits until then.
 2. **Master password strength is the real protection.** Use a long passphrase. Argon2id slows guessing; it cannot save a weak password.

@@ -22,7 +22,8 @@ Password, card and secure-note manager. Local-only, end-to-end encrypted, PIN + 
 - **Local-only** — nothing leaves your device, no account, no tracking
 - **Password generator** with strength meter
 - **Auto-lock** on idle and **clipboard auto-clear** after 20 seconds
-- **Encrypted backup** export and import
+- **Encrypted backup** export and import, plus optional **Google Drive / OneDrive** sync (the cloud only ever stores the encrypted vault)
+- **Sign in with Google or Outlook**, then unlock with your PIN on that device
 - **Cinematic intro** — tap the lightbulb and the vault lights up
 - **Arabic (RTL), English and Chinese** interface
 - **Works everywhere** — any modern browser, installable on your phone ("Add to Home Screen"), and a Windows desktop app

@@ -225,3 +225,9 @@ export function lock(s: Session): void {
   wipe(s.key)
   s.data = { items: [] }
 }
+
+/** Copy of the file safe to store in the cloud: master wrapper + data only. */
+export function stripLocal(f: VaultFile): VaultFile {
+  const { pin: _p, bio: _b, ...rest } = f
+  return rest as VaultFile
+}

@@ -15,8 +15,8 @@ export function storeVault(f: VaultFile): void {
   localStorage.setItem(VAULT_KEY, JSON.stringify(f))
 }
 
-export interface Prefs { lang: Lang; autoLockMin: number; introSeen: boolean; side: boolean }
-const defaults: Prefs = { lang: 'ar', autoLockMin: 5, introSeen: false, side: true }
+export interface Prefs { lang: Lang; autoLockMin: number; introSeen: boolean; side: boolean; quickOffered: boolean }
+const defaults: Prefs = { lang: 'ar', autoLockMin: 5, introSeen: false, side: true, quickOffered: false }
 
 export function loadPrefs(): Prefs {
   try { return { ...defaults, ...JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') } } catch { return defaults }

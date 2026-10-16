@@ -7,6 +7,7 @@ import {
 import { defaultGen, generatePassword, type GenOpts } from '../crypto/generator'
 import { biometricAvailable, enrollBiometric } from '../crypto/webauthn'
 import { copySecret, storeVault, type Prefs } from '../store'
+import { availableProviders, connect, connected, disconnect, push } from '../cloud'
 import { Strength } from './Auth'
 import { Bulb } from './Bulb'
 import { CardVisual } from './CardVisual'
@@ -61,6 +62,7 @@ export function Vault({ session, prefs, setPrefs, onLock, onFile }: {
     session.data.items = next
     const f = save(session)
     storeVault(f); onFile(f)
+    push(f).catch(() => {})
     setItems(next)
   }
 
@@ -525,6 +527,26 @@ function Settings({ session, prefs, setPrefs, onFile, onClose, onImported, flash
           </div>
         </label>
         <Strength pw={newPw} />
+        {availableProviders().length > 0 && (
+          <>
+            <hr />
+            <div className="set-cloud">
+              <small>{t('cloudTitle')}</small>
+              {connected() ? (
+                <div className="row">
+                  <span className="grow">{t('cloudOn')}{connected() === 'google' ? 'Google Drive' : 'OneDrive'}</span>
+                  <button className="btn" onClick={() => push(session.file).then(() => flash(t('cloudDone'))).catch(() => setErr(t('cloudFail')))}>{t('cloudSync')}</button>
+                  <button className="btn" onClick={() => { disconnect(); bump((n) => n + 1) }}>{t('cloudOff')}</button>
+                </div>
+              ) : (
+                <div className="row wrap">
+                  {availableProviders().includes('google') && <button className="btn" onClick={() => connect('google').then(() => push(session.file)).then(() => { flash(t('cloudDone')); bump((n) => n + 1) }).catch(() => setErr(t('cloudFail')))}>{t('cloudConnectG')}</button>}
+                  {availableProviders().includes('microsoft') && <button className="btn" onClick={() => connect('microsoft').then(() => push(session.file)).then(() => { flash(t('cloudDone')); bump((n) => n + 1) }).catch(() => setErr(t('cloudFail')))}>{t('cloudConnectM')}</button>}
+                </div>
+              )}
+            </div>
+          </>
+        )}
         <hr />
         <div className="row">
           <button className="btn" onClick={doExport}>{t('export')}</button>
