@@ -1,5 +1,6 @@
 import type { VaultFile } from '../crypto/vault'
 import { stripLocal } from '../crypto/vault'
+import { isDesktop } from '../device'
 
 /**
  * Optional encrypted cloud backup/sync. The cloud only ever receives the
@@ -14,7 +15,8 @@ const MS_ID = import.meta.env.VITE_MS_CLIENT_ID as string | undefined
 const FILE = 'lumen-vault.json'
 let session: { provider: Provider; token: string; expires: number } | null = null
 
-export const availableProviders = (): Provider[] => [GOOGLE_ID && 'google', MS_ID && 'microsoft'].filter(Boolean) as Provider[]
+// The desktop shell runs on a different origin and blocks popups: cloud sign-in is web-only for now.
+export const availableProviders = (): Provider[] => (isDesktop ? [] : ([GOOGLE_ID && 'google', MS_ID && 'microsoft'].filter(Boolean) as Provider[]))
 export const connected = (): Provider | null => (session && session.expires > Date.now() ? session.provider : null)
 export const disconnect = () => { session = null }
 
