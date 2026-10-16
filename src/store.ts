@@ -15,13 +15,8 @@ export function storeVault(f: VaultFile): void {
   localStorage.setItem(VAULT_KEY, JSON.stringify(f))
 }
 
-export interface Prefs { lang: Lang; autoLockMin: number; introSeen: boolean }
-const defaults: Prefs = { lang: guessLang(), autoLockMin: 5, introSeen: false }
-
-function guessLang(): Lang {
-  const n = (navigator.language || 'en').toLowerCase()
-  return n.startsWith('ar') ? 'ar' : n.startsWith('zh') ? 'zh' : 'en'
-}
+export interface Prefs { lang: Lang; autoLockMin: number; introSeen: boolean; side: boolean }
+const defaults: Prefs = { lang: 'ar', autoLockMin: 5, introSeen: false, side: true }
 
 export function loadPrefs(): Prefs {
   try { return { ...defaults, ...JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') } } catch { return defaults }

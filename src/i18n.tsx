@@ -48,6 +48,11 @@ const en = {
   len: 'Length', lower: 'a–z', upper: 'A–Z', digits: '0–9', symbols: '!@#', ambiguous: 'Avoid look-alikes',
   useThis: 'Use this', regenerate: 'Regenerate', newMaster: 'New master password', generator: 'Generator',
   on: 'On', off: 'Off', footer: 'Local-only vault · XChaCha20-Poly1305 · Argon2id',
+  hello: 'Welcome to your vault', homeSub: 'Everything is encrypted on this device.',
+  statLogins: 'Logins', statCards: 'Cards', statNotes: 'Notes', health: 'Security health', weakPw: 'Weak passwords', reusedPw: 'Reused passwords', allGood: 'All good',
+  hideSide: 'Hide menu', showSide: 'Show menu', sortName: 'Name', sortRecent: 'Recent', openSite: 'Open site', updatedAt: 'Updated',
+  bankPick: 'Choose card design', network: 'Card network', cardOk: 'Valid card number', cardBad: 'Number looks invalid', flipHint: 'Tap the card to flip', quickAdd: 'Quick add',
+  editLogin: 'Edit login', editCard: 'Edit card', editNote: 'Edit note', noteTitleHint: 'Note title', pwStrength: 'Strength', tapReveal: 'Tap to reveal',
 }
 
 type Dict = typeof en
@@ -93,6 +98,11 @@ const ar: Dict = {
   len: 'الطول', lower: 'a–z', upper: 'A–Z', digits: '0–9', symbols: '!@#', ambiguous: 'تجنب الأحرف المتشابهة',
   useThis: 'استخدمها', regenerate: 'إعادة توليد', newMaster: 'كلمة مرور رئيسية جديدة', generator: 'المولّد',
   on: 'مفعّل', off: 'متوقف', footer: 'خزنة محلية فقط · XChaCha20-Poly1305 · Argon2id',
+  hello: 'أهلاً بك في خزنتك', homeSub: 'كل شيء مشفّر على هذا الجهاز.',
+  statLogins: 'حسابات', statCards: 'بطاقات', statNotes: 'ملاحظات', health: 'صحة الأمان', weakPw: 'كلمات مرور ضعيفة', reusedPw: 'كلمات مرور مكررة', allGood: 'كل شيء سليم',
+  hideSide: 'إخفاء القائمة', showSide: 'إظهار القائمة', sortName: 'الاسم', sortRecent: 'الأحدث', openSite: 'فتح الموقع', updatedAt: 'آخر تحديث',
+  bankPick: 'اختر تصميم البطاقة', network: 'شبكة البطاقة', cardOk: 'رقم البطاقة صحيح', cardBad: 'الرقم يبدو غير صحيح', flipHint: 'المس البطاقة لقلبها', quickAdd: 'إضافة سريعة',
+  editLogin: 'تعديل الحساب', editCard: 'تعديل البطاقة', editNote: 'تعديل الملاحظة', noteTitleHint: 'عنوان الملاحظة', pwStrength: 'القوة', tapReveal: 'المس للإظهار',
 }
 
 const zh: Dict = {
@@ -136,6 +146,11 @@ const zh: Dict = {
   len: '长度', lower: 'a–z', upper: 'A–Z', digits: '0–9', symbols: '!@#', ambiguous: '避免易混字符',
   useThis: '使用', regenerate: '重新生成', newMaster: '新主密码', generator: '生成器',
   on: '开', off: '关', footer: '仅本地保险库 · XChaCha20-Poly1305 · Argon2id',
+  hello: '欢迎来到你的保险库', homeSub: '所有内容均在此设备上加密。',
+  statLogins: '登录', statCards: '银行卡', statNotes: '笔记', health: '安全状况', weakPw: '弱密码', reusedPw: '重复密码', allGood: '一切正常',
+  hideSide: '隐藏菜单', showSide: '显示菜单', sortName: '名称', sortRecent: '最近', openSite: '打开网站', updatedAt: '更新于',
+  bankPick: '选择卡面设计', network: '卡组织', cardOk: '卡号有效', cardBad: '卡号似乎无效', flipHint: '点击卡片翻转', quickAdd: '快速添加',
+  editLogin: '编辑登录', editCard: '编辑银行卡', editNote: '编辑笔记', noteTitleHint: '笔记标题', pwStrength: '强度', tapReveal: '点击显示',
 }
 
 export type Key = keyof Dict

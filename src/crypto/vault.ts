@@ -27,7 +27,7 @@ export interface VaultFile {
 }
 
 export type LoginItem = { type: 'login'; username: string; password: string; url: string; notes: string }
-export type CardItem = { type: 'card'; holder: string; number: string; expiry: string; cvv: string; pin: string; bank: string; notes: string }
+export type CardItem = { type: 'card'; holder: string; number: string; expiry: string; cvv: string; pin: string; bank: string; notes: string; style?: string; network?: string }
 export type NoteItem = { type: 'note'; body: string }
 export type Item = { id: string; title: string; fav: boolean; created: number; updated: number } & (LoginItem | CardItem | NoteItem)
 export interface VaultData { items: Item[] }
