@@ -89,6 +89,17 @@ describe('pin', () => {
     expect(await unlockWithPassword(f, PW)).toBeDefined()
   })
 
+  it('device-bound PIN needs the device secret', async () => {
+    const s = await createVault(PW, FAST)
+    const dev = rand(32)
+    await setupPin(s, '123456', FAST, 5, dev)
+    expect(s.file.pin!.dev).toBe(true)
+    await expect(unlockWithPin(s.file, '123456')).rejects.toMatchObject({ code: 'no-pin' })
+    const bad = await unlockWithPin(s.file, '123456', rand(32))
+    expect(bad.session).toBeUndefined()
+    expect((await unlockWithPin(bad.file, '123456', dev)).session).toBeDefined()
+  })
+
   it('rejects non-numeric / short PIN', async () => {
     const s = await createVault(PW, FAST)
     await expect(setupPin(s, '12ab56', FAST)).rejects.toBeInstanceOf(VaultError)

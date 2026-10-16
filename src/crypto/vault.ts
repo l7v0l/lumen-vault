@@ -21,7 +21,7 @@ export interface VaultFile {
   id: string
   kdf: KdfParams
   master: Sealed
-  pin?: { kdf: KdfParams; wrap: Sealed; fails: number; max: number }
+  pin?: { kdf: KdfParams; wrap: Sealed; fails: number; max: number; dev?: boolean }
   bio?: { credId: string; salt: string; wrap: Sealed }
   data: Sealed
 }
@@ -148,11 +148,14 @@ export async function changeMaster(s: Session, newMaster: string, cost: KdfCost 
   return s.file
 }
 
-export async function setupPin(s: Session, pin: string, cost: KdfCost = PIN_COST, max = PIN_MAX_FAILS): Promise<VaultFile> {
+/** `device` = secret that never leaves this machine (OS-protected). Without it the PIN is only Argon2id-hard. */
+const pinInput = (pin: string, device?: Uint8Array) => (device ? pin + '\u0000' + b64(device) : pin)
+
+export async function setupPin(s: Session, pin: string, cost: KdfCost = PIN_COST, max = PIN_MAX_FAILS, device?: Uint8Array): Promise<VaultFile> {
   if (!/^\d{6,12}$/.test(pin)) throw new VaultError('weak', 'PIN must be 6-12 digits')
   const kdf = newKdf(cost)
-  const kek = await derive(pin, kdf)
-  s.file = { ...s.file, pin: { kdf, wrap: seal(kek, s.key, 'wrap-pin', s.file.id), fails: 0, max } }
+  const kek = await derive(pinInput(pin, device), kdf)
+  s.file = { ...s.file, pin: { kdf, wrap: seal(kek, s.key, 'wrap-pin', s.file.id), fails: 0, max, ...(device ? { dev: true } : {}) } }
   wipe(kek)
   return s.file
 }
@@ -170,11 +173,11 @@ export interface PinResult { file: VaultFile; session?: Session; remaining: numb
  * counter). At `max` failures the PIN wrapper is destroyed and the master
  * password is required.
  */
-export async function unlockWithPin(file: VaultFile, pin: string): Promise<PinResult> {
+export async function unlockWithPin(file: VaultFile, pin: string, device?: Uint8Array): Promise<PinResult> {
   const p = file.pin
-  if (!p) throw new VaultError('no-pin')
+  if (!p || (p.dev && !device)) throw new VaultError('no-pin')
   if (p.fails >= p.max) throw new VaultError('pin-locked')
-  const kek = await derive(pin, p.kdf)
+  const kek = await derive(pinInput(pin, p.dev ? device : undefined), p.kdf)
   try {
     const key = open(kek, p.wrap, 'wrap-pin', file.id)
     const f: VaultFile = { ...file, pin: { ...p, fails: 0 } }

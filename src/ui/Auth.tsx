@@ -6,6 +6,7 @@ import {
 } from '../crypto/vault'
 import { biometricAvailable, enrollBiometric, getSecret } from '../crypto/webauthn'
 import { storeVault } from '../store'
+import { deviceSecret } from '../device'
 import { availableProviders, connect, pull, push, type Provider } from '../cloud'
 import { Bulb } from './Bulb'
 
@@ -134,7 +135,7 @@ export function QuickSetup({ session, onDone }: { session: Session; onDone: () =
 
   const doPin = async () => {
     setBusy(true)
-    try { storeVault(await setupPin(session, pin)); setPinOn(true); setPin('') } catch { setMsg(t('setPin')) }
+    try { storeVault(await setupPin(session, pin, undefined, undefined, await deviceSecret())); setPinOn(true); setPin('') } catch { setMsg(t('setPin')) }
     setBusy(false)
   }
   const doBio = async () => {
@@ -195,7 +196,7 @@ export function Unlock({ file, onFile, onUnlocked }: {
     if (busy) return
     setBusy(true); setMsg('')
     try {
-      const r = await unlockWithPin(file, p)
+      const r = await unlockWithPin(file, p, await deviceSecret())
       storeVault(r.file); onFile(r.file)
       if (r.session) onUnlocked(r.session)
       else {

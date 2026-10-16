@@ -7,6 +7,7 @@ import {
 import { defaultGen, generatePassword, type GenOpts } from '../crypto/generator'
 import { biometricAvailable, enrollBiometric } from '../crypto/webauthn'
 import { copySecret, storeVault, type Prefs } from '../store'
+import { deviceSecret } from '../device'
 import { availableProviders, connect, connected, disconnect, push } from '../cloud'
 import { Strength } from './Auth'
 import { Bulb } from './Bulb'
@@ -464,7 +465,7 @@ function Settings({ session, prefs, setPrefs, onFile, onClose, onImported, flash
   const persist = (f: VaultFile) => { storeVault(f); onFile(f); bump((n) => n + 1) }
   const f = session.file
 
-  const doPin = async () => { setBusy(true); try { persist(await setupPin(session, pin)); setPin(''); flash(t('saved')) } catch { setErr(t('setPin')) } setBusy(false) }
+  const doPin = async () => { setBusy(true); try { persist(await setupPin(session, pin, undefined, undefined, await deviceSecret())); setPin(''); flash(t('saved')) } catch { setErr(t('setPin')) } setBusy(false) }
   const doBio = async () => {
     setErr('')
     try { const r = await enrollBiometric(); persist(setupBiometric(session, r.credId, r.salt, r.secret)) }
