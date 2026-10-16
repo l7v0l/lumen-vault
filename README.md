@@ -1,28 +1,40 @@
+<div align="center">
+
+<img src="docs/logo.svg" width="120" alt="Lumen logo" />
+
 # Lumen
 
-Password, card and secure-note manager. Local-only, end-to-end encrypted vault, PIN + biometric unlock, Arabic / English / 简体中文.
+**Your secrets, kept in the light.**
 
-## Run (web preview, works now)
-```bash
-npm install
-npm run dev      # http://localhost:5173
-npm test         # crypto tests
-npm run build
-```
+Password, card and secure-note manager. Local-only, end-to-end encrypted, PIN + biometric unlock, Arabic / English / 简体中文.
 
-## Desktop app (Tauri 2)
-Needs: Rust (https://rustup.rs) and Visual Studio Build Tools 2022 ("Desktop development with C++" + Windows SDK). WebView2 ships with Windows 11.
-```bash
-npm run tauri dev
-npm run tauri build
-```
-The `src-tauri` shell is scaffolded but **not yet compiled** (no Rust on the dev machine at the time of writing).
+### [▶ Try it in your browser](https://l7v0l.github.io/lumen-vault/)
 
-## Android
-After desktop works: `npm run tauri android init` (needs Android SDK/NDK, JDK 17), then `npm run tauri android dev`.
+[Browser / Mobile](https://l7v0l.github.io/lumen-vault/) · [Windows desktop](https://github.com/l7v0l/lumen-vault/releases/latest)
 
-## Layout
-- `src/crypto/` — vault format, Argon2id, XChaCha20-Poly1305, PIN lockout, WebAuthn-PRF biometric, generator, tests
-- `src/ui/` — intro animation (tap the bulb), unlock/create, vault, settings
-- `src/i18n.tsx` — ar (RTL) / en / zh
-- `docs/SECURITY.md` — design and honest limits
+</div>
+
+## Features
+
+- **Logins, bank cards and secure notes** in one encrypted vault
+- **Strong encryption** — Argon2id key derivation + XChaCha20-Poly1305, tamper detection
+- **Unlock your way** — master password, PIN (auto-wipes after 5 wrong tries) or biometrics (Windows Hello, Face ID, Android fingerprint/face via the OS)
+- **Local-only** — nothing leaves your device, no account, no tracking
+- **Password generator** with strength meter
+- **Auto-lock** on idle and **clipboard auto-clear** after 20 seconds
+- **Encrypted backup** export and import
+- **Cinematic intro** — tap the lightbulb and the vault lights up
+- **Arabic (RTL), English and Chinese** interface
+- **Works everywhere** — any modern browser, installable on your phone ("Add to Home Screen"), and a Windows desktop app
+
+## Try it
+
+- **Browser:** https://l7v0l.github.io/lumen-vault/
+- **Mobile:** open the link above in Chrome/Safari → menu → *Add to Home Screen*
+- **Desktop:** download the latest Windows build from [Releases](https://github.com/l7v0l/lumen-vault/releases/latest)
+
+> Security notes and honest limits: [docs/SECURITY.md](docs/SECURITY.md). Not independently audited.
+
+## License
+
+MIT
