@@ -10,7 +10,7 @@ Password, card and secure-note manager. Local-only, end-to-end encrypted, PIN + 
 
 ### [▶ Try it in your browser](https://l7v0l.github.io/lumen-vault/)
 
-[Browser / Mobile](https://l7v0l.github.io/lumen-vault/) · [Windows desktop](https://github.com/l7v0l/lumen-vault/releases/latest)
+[Browser / Mobile](https://l7v0l.github.io/lumen-vault/) · [Windows desktop](https://github.com/l7v0l/lumen-vault/releases/latest) · [Android APK](https://github.com/l7v0l/lumen-vault/releases/latest)
 
 </div>
 
@@ -32,7 +32,8 @@ Password, card and secure-note manager. Local-only, end-to-end encrypted, PIN + 
 
 - **Browser:** https://l7v0l.github.io/lumen-vault/
 - **Mobile:** open the link above in Chrome/Safari → menu → *Add to Home Screen*
-- **Desktop:** download the latest Windows build from [Releases](https://github.com/l7v0l/lumen-vault/releases/latest)
+- **Desktop:** download the latest Windows installer from [Releases](https://github.com/l7v0l/lumen-vault/releases/latest)
+- **Android:** download the APK from [Releases](https://github.com/l7v0l/lumen-vault/releases/latest) (allow installing from unknown sources)
 
 > Security notes and honest limits: [docs/SECURITY.md](docs/SECURITY.md). Not independently audited.
 
