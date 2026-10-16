@@ -1,5 +1,8 @@
 use std::{fs, path::PathBuf};
+use std::{io::{Read, Write}, net::TcpListener, sync::Mutex, time::{Duration, Instant}};
 use tauri::Manager;
+
+struct OAuthSlot(Mutex<Option<TcpListener>>);
 
 fn data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     let d = app.path().app_data_dir().map_err(|e| e.to_string())?;
@@ -49,6 +52,68 @@ fn device_secret(app: tauri::AppHandle) -> Result<Vec<u8>, String> {
     Ok(secret.to_vec())
 }
 
+/// Loopback OAuth (RFC 8252): bind a free 127.0.0.1 port, the UI opens the system browser, then waits for the redirect.
+#[tauri::command]
+fn oauth_start(slot: tauri::State<OAuthSlot>) -> Result<u16, String> {
+    let l = TcpListener::bind("127.0.0.1:0").map_err(|e| e.to_string())?;
+    l.set_nonblocking(true).map_err(|e| e.to_string())?;
+    let port = l.local_addr().map_err(|e| e.to_string())?.port();
+    *slot.0.lock().unwrap() = Some(l);
+    Ok(port)
+}
+
+#[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+    if !url.starts_with("https://accounts.google.com/") {
+        return Err("url not allowed".into());
+    }
+    #[cfg(windows)]
+    let r = std::process::Command::new("rundll32").args(["url.dll,FileProtocolHandler", &url]).spawn();
+    #[cfg(target_os = "macos")]
+    let r = std::process::Command::new("open").arg(&url).spawn();
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let r = std::process::Command::new("xdg-open").arg(&url).spawn();
+    r.map(|_| ()).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn oauth_wait(slot: tauri::State<'_, OAuthSlot>) -> Result<String, String> {
+    let l = slot.0.lock().unwrap().take().ok_or("oauth not started")?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let end = Instant::now() + Duration::from_secs(180);
+        loop {
+            match l.accept() {
+                Ok((mut s, _)) => {
+                    let _ = s.set_nonblocking(false);
+                    let _ = s.set_read_timeout(Some(Duration::from_secs(5)));
+                    let mut buf = [0u8; 4096];
+                    let n = s.read(&mut buf).unwrap_or(0);
+                    let req = String::from_utf8_lossy(&buf[..n]).to_string();
+                    let line = req.lines().next().unwrap_or("");
+                    let query = line.split_whitespace().nth(1).and_then(|p| p.split_once('?')).map(|x| x.1.to_string());
+                    let body = "<html><body style=\"font-family:sans-serif;background:#0b1220;color:#e9eefc;display:grid;place-items:center;height:100vh\"><h2>Lumen: you can close this tab</h2></body></html>";
+                    let _ = s.write_all(format!("HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: {}
+Connection: close
+
+{}", body.len(), body).as_bytes());
+                    if let Some(q) = query {
+                        return Ok(q);
+                    }
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    if Instant::now() > end { return Err("timeout".to_string()); }
+                    std::thread::sleep(Duration::from_millis(100));
+                }
+                Err(e) => return Err(e.to_string()),
+            }
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
 #[cfg(windows)]
 mod os {
     use windows::Win32::Foundation::{LocalFree, HLOCAL};
@@ -82,7 +147,8 @@ mod os {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_file, write_file, device_secret])
+        .manage(OAuthSlot(Mutex::new(None)))
+        .invoke_handler(tauri::generate_handler![read_file, write_file, device_secret, oauth_start, open_url, oauth_wait])
         .run(tauri::generate_context!())
         .expect("error while running Lumen");
 }

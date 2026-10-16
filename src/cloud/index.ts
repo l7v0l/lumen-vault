@@ -1,6 +1,6 @@
 import type { VaultFile } from '../crypto/vault'
 import { stripLocal } from '../crypto/vault'
-import { isDesktop } from '../device'
+import { invoke, isDesktop } from '../device'
 
 /**
  * Optional encrypted cloud backup/sync. The cloud only ever receives the
@@ -11,12 +11,15 @@ export type Provider = 'google' | 'microsoft'
 
 const GOOGLE_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
 const MS_ID = import.meta.env.VITE_MS_CLIENT_ID as string | undefined
+const G_DESKTOP_ID = import.meta.env.VITE_GOOGLE_DESKTOP_CLIENT_ID as string | undefined
+// Google's "Desktop app" clients are public clients; Google documents that this secret is not confidential.
+const G_DESKTOP_SECRET = import.meta.env.VITE_GOOGLE_DESKTOP_CLIENT_SECRET as string | undefined
 
 const FILE = 'lumen-vault.json'
 let session: { provider: Provider; token: string; expires: number } | null = null
 
-// The desktop shell runs on a different origin and blocks popups: cloud sign-in is web-only for now.
-export const availableProviders = (): Provider[] => (isDesktop ? [] : ([GOOGLE_ID && 'google', MS_ID && 'microsoft'].filter(Boolean) as Provider[]))
+export const availableProviders = (): Provider[] =>
+  isDesktop ? (G_DESKTOP_ID ? ['google'] : []) : ([GOOGLE_ID && 'google', MS_ID && 'microsoft'].filter(Boolean) as Provider[])
 export const connected = (): Provider | null => (session && session.expires > Date.now() ? session.provider : null)
 export const disconnect = () => { session = null }
 
@@ -31,7 +34,30 @@ function loadGsi(): Promise<void> {
   })
 }
 
+async function googleDesktopToken(): Promise<{ token: string; expires: number }> {
+  const verifier = b64u(crypto.getRandomValues(new Uint8Array(48)))
+  const challenge = b64u(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))))
+  const state = b64u(crypto.getRandomValues(new Uint8Array(16)))
+  const port = await invoke<number>('oauth_start')
+  const redirectUri = `http://127.0.0.1:${port}`
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
+    client_id: G_DESKTOP_ID!, redirect_uri: redirectUri, response_type: 'code', scope: 'https://www.googleapis.com/auth/drive.appdata',
+    code_challenge: challenge, code_challenge_method: 'S256', state,
+  })
+  await invoke('open_url', { url })
+  const q = new URLSearchParams(await invoke<string>('oauth_wait'))
+  if (q.get('state') !== state || !q.get('code')) throw new Error('google-' + (q.get('error') || 'denied'))
+  const r = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: G_DESKTOP_ID!, client_secret: G_DESKTOP_SECRET ?? '', code: q.get('code')!, code_verifier: verifier, redirect_uri: redirectUri, grant_type: 'authorization_code' }),
+  })
+  if (!r.ok) throw new Error('google-token-' + r.status)
+  const j = await r.json()
+  return { token: j.access_token, expires: Date.now() + (j.expires_in ?? 3600) * 1000 - 30000 }
+}
+
 async function googleToken(): Promise<{ token: string; expires: number }> {
+  if (isDesktop) return googleDesktopToken()
   await loadGsi()
   return new Promise((res, rej) => {
     const c = (window as any).google.accounts.oauth2.initTokenClient({
