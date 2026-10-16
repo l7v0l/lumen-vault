@@ -40,7 +40,6 @@ function Shell({ children }: { children: React.ReactNode }) {
         <div className="logo"><Bulb lit size={64} /></div>
         {children}
       </div>
-      <p className="foot">{t('footer')}</p>
     </div>
   )
 }
